@@ -12,11 +12,16 @@ public class cshGameManager : MonoBehaviourPun // 점수와 게임 오버 여부
     public GameObject Item3;
     public float time;
     public float time1;
+    public Button Btn;
+    public GameObject text;
+    public GameObject text1;
+    public GameObject Panel;
+    public int a=0;
 
     public void Connect()
     {
         PhotonNetwork.Disconnect();
-        SceneManager.LoadScene("Lobby");        
+        SceneManager.LoadScene("Lobby");
     }
 
     public static cshGameManager instance // 외부에서 싱글톤 오브젝트를 가져올때 사용할 프로퍼티
@@ -53,31 +58,54 @@ public class cshGameManager : MonoBehaviourPun // 점수와 게임 오버 여부
 
     private void Start()
     {
+
+
         // 생성할 랜덤 위치 지정
         Vector3 randomSpawnPos = SpawnPosPrefab.transform.position;//Random.insideUnitSphere * 5f;
         // 네트워크상의 모든 클라이언트에서 생성 실행  
         // 해당 게임 오브젝트의 주도권은 생성 메서드를 직접 실행한 클라이언트에 있음
-        PhotonNetwork.Instantiate(PlayerPrefab.name, randomSpawnPos, Quaternion.identity);
+        PhotonNetwork.Instantiate(PlayerPrefab.name, new Vector3(Random.Range(-4.0f, 4.0f), 1.0f, Random.Range(37.0f, 41.0f)), Quaternion.identity);
     }
     [PunRPC]
     public void trashSpawn(){
         {
-            int num = Random.Range(0, 3);
-            if (time >= 1.0)
+            if (PhotonNetwork.IsMasterClient&&PhotonNetwork.PlayerList.Length==2&&time1<60.0)
             {
-                if(num==0){
-                    PhotonNetwork.Instantiate(Item1.name, new Vector3(Random.Range(-13.0f, 13.0f), 1.3f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
+                int num = Random.Range(0, 3);
+                if (time >= 2.0)
+                {
+                    if(num==0){
+                        PhotonNetwork.InstantiateRoomObject(Item1.name, new Vector3(Random.Range(-12.0f, 12.0f), 0.5f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
+                    }
+                    else if(num==1){
+                        PhotonNetwork.InstantiateRoomObject(Item2.name, new Vector3(Random.Range(-12.0f, 12.0f), 0.5f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
+                    }
+                    else{
+                        PhotonNetwork.InstantiateRoomObject(Item3.name, new Vector3(Random.Range(-12.0f, 12.0f), 0.5f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
+                    }
+                    time = 0.0f;
                 }
-                else if(num==1){
-                    PhotonNetwork.Instantiate(Item2.name, new Vector3(Random.Range(-13.0f, 13.0f), 1.3f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
-                }
-                else{
-                    PhotonNetwork.Instantiate(Item3.name, new Vector3(Random.Range(-13.0f, 13.0f), 1.3f, Random.Range(30.0f, 50.0f)), Quaternion.identity);
-                }
-                time = 0.0f;
+                time += Time.deltaTime;
             }
-            time += Time.deltaTime;
+        }
+        if(PhotonNetwork.PlayerList.Length==1&&a==0){
+            text.gameObject.SetActive(true);
+        }
+        if(PhotonNetwork.PlayerList.Length==2){
+            a++;
+            PhotonNetwork.CurrentRoom.IsOpen = false;
+            PhotonNetwork.CurrentRoom.IsVisible =false;
+            text.gameObject.SetActive(false);
+            text1.gameObject.SetActive(true);
+            Btn.interactable = false;
             time1+=Time.deltaTime;
+            if(time1>=60.0){
+                text1.gameObject.SetActive(false);
+                Panel.gameObject.SetActive(true);
+            }
+        }
+        if(time1>=60.0){
+            Btn.interactable = true;
         }
     }
 

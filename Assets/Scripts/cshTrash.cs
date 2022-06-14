@@ -15,7 +15,7 @@ public class cshTrash : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        if (time >= 10.0)
+        if (time >= 15.0)
         {
             PhotonNetwork.Destroy(gameObject);
         }

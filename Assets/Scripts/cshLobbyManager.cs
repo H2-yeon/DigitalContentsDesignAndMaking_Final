@@ -70,7 +70,7 @@ public class cshLobbyManager : MonoBehaviourPunCallbacks // PUN 구현할때 ove
         connectionInfoText.text = "새로운 방 생성!";
 
         // 새로운 방을 만들며 (방의 Name, 방의 옵션 설정)
-        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 4});
+        PhotonNetwork.CreateRoom(null, new RoomOptions { MaxPlayers = 2});
 
         //base.OnJoinRandomFailed(returnCode, message);
     }
